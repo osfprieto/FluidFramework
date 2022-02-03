@@ -147,7 +147,7 @@ export class SummaryManager extends TypedEventEmitter<ISummaryManagerEvents> imp
     private getShouldSummarizeState(): ShouldSummarizeState {
         if (!this.connectedState.connected) {
             return { shouldSummarize: false, stopReason: "parentNotConnected" };
-        } else if (this.connectedState.clientId !== this.clientElection.electedClientId) {
+        } else if (this.connectedState.clientId !== this.clientElection.electedParentId) {
             return { shouldSummarize: false, stopReason: "parentShouldNotSummarize" };
         } else if (this.disposed) {
             assert(false, 0x260 /* "Disposed should mean disconnected!" */);
