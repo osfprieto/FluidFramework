@@ -7,10 +7,14 @@
 name: $(Build.BuildId)
 
 parameters:
-  - name: deploySite
-    displayName: 'Deploy the built site'
-    type: boolean
-    default: false
+  - name: deployOverride
+    displayName: Deployment Override (default = based on branch)
+    type: string
+    default: default
+    values:
+      - default
+      - skip
+      - force
 
 variables:
   - group: doc-versions
@@ -33,6 +37,13 @@ variables:
     value: ${{ or(variables.releasePipeline, variables.n1Pipeline, variables.latestPipeline) }}
   - name: Packaging.EnableSBOMSigning
     value: true
+  - name: isMain
+    value: ${{ eq(variables['Build.SourceBranchName'], 'main') }}
+  - name: shouldDeploy
+    value: ${{ or(
+      eq(parameters.deployOverride, 'force'),
+      and(eq(variables.isMain, true), eq(parameters.deployOverride, 'default'))
+      )}}
 
 # no PR triggers
 trigger:
@@ -199,7 +210,7 @@ stages:
           ArtifactName: 'fluidframework-docs'
           publishLocation: 'Container'
 
-      - ${{ if eq(parameters.deploySite, true) }}:
+      - ${{ if eq(variables.shouldDeploy, true) }}:
         - task: AzureStaticWebApp@0
           displayName: 'Deploy site'
           inputs:
