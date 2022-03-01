@@ -27,8 +27,12 @@ variables:
     value: ${{ or(variables.releasePipeline, variables.n1Pipeline, variables.latestPipeline) }}
   - name: Packaging.EnableSBOMSigning
     value: true
+  - name: deploySite
+    displayName: 'Deploy the built site'
+    type: boolean
+    default: false
 
-# no branch and PR triggers
+# no PR triggers
 trigger:
   branches:
     include:
@@ -146,14 +150,14 @@ stages:
           ArtifactType: M365
         condition: succeededOrFailed()
 
-      - task: AssetRetention@3
-        inputs:
-          ArrowServiceConnection: '<ARROW_SERVICE_CONNECTION_NAME>' # TODO
-          AssetGroupName: '$(System.TeamProject)_$(Build.DefinitionName)'
-          AssetNumber: '$(Build.BuildId)'
-          IsShipped: false
-          DropsToRetain: 'CodeAnalysisLogs'
-        condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
+      # - task: AssetRetention@3
+      #   inputs:
+      #     ArrowServiceConnection: '<ARROW_SERVICE_CONNECTION_NAME>' # TODO
+      #     AssetGroupName: '$(System.TeamProject)_$(Build.DefinitionName)'
+      #     AssetNumber: '$(Build.BuildId)'
+      #     IsShipped: false
+      #     DropsToRetain: 'CodeAnalysisLogs'
+      #   condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
 
       - task: securedevelopmentteam.vss-secure-development-tools.build-task-postanalysis.PostAnalysis@2
         condition: succeededOrFailed()
