@@ -135,14 +135,17 @@ stages:
         inputs:
           packageType: sdk
           version: 3.x
+
       - task: securedevelopmentteam.vss-secure-development-tools.build-task-eslint.ESLint@1
         condition: succeededOrFailed()
         displayName: 'Run ESLint'
+
       - task: securedevelopmentteam.vss-secure-development-tools.build-task-publishsecurityanalysislogs.PublishSecurityAnalysisLogs@3
         displayName: 'Publish Guardian Artifacts - All Tools'
         inputs:
           ArtifactType: M365
         condition: succeededOrFailed()
+
       - task: AssetRetention@3
         inputs:
           ArrowServiceConnection: '<ARROW_SERVICE_CONNECTION_NAME>' # TODO
@@ -151,6 +154,7 @@ stages:
           IsShipped: false
           DropsToRetain: 'CodeAnalysisLogs'
         condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
+
       - task: securedevelopmentteam.vss-secure-development-tools.build-task-postanalysis.PostAnalysis@2
         condition: succeededOrFailed()
         displayName: 'Guardian Break'
