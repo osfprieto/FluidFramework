@@ -136,11 +136,11 @@ stages:
 
       # Secure development requirements
       - task: UseDotNet@2
-        displayName: 'Use .NET Core 3.x'
+        displayName: 'Use .NET Core 2.1.x'
         condition: succeededOrFailed()
         inputs:
           packageType: sdk
-          version: 3.x
+          version: 2.1.x
 
       - task: securedevelopmentteam.vss-secure-development-tools.build-task-eslint.ESLint@1
         condition: succeededOrFailed()
